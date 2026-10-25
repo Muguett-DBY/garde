@@ -1,0 +1,56 @@
+{
+  "name": "Verify custom length message for discussion164",
+  "on": {
+    "push": {
+      "branches": [
+        "probe/custom-length-message-2026-10-26"
+      ],
+      "paths": [
+        ".github/workflows/probe-custom-message.yml",
+        "garde/tests/discussion_164.rs"
+      ]
+    },
+    "workflow_dispatch": {}
+  },
+  "permissions": {
+    "contents": "read"
+  },
+  "jobs": {
+    "released-garden-example": {
+      "runs-on": "ubuntu-24.04",
+      "timeout-minutes": 15,
+      "env": {
+        "CARGO_TERM_COLOR": "never",
+        "CARGO_REGISTRIES_CRATES_IO_PROTOCOL": "sparse"
+      },
+      "steps": [
+        {
+          "uses": "actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803",
+          "with": {
+            "persist-credentials": false
+          }
+        },
+        {
+          "name": "Install the project MSRV on this ephemeral runner",
+          "run": "rustup toolchain install 1.87.0 --profile minimal"
+        },
+        {
+          "name": "Check only the example and validation workflow were added",
+          "run": "test \"$(git rev-parse HEAD^)\" = 62b71b12102bfcef0041672ef9b7d6b0d5b74369\ngit diff --exit-code HEAD^ HEAD -- garde/src garde_derive/src Cargo.toml Cargo.lock garde/Cargo.toml"
+        },
+        {
+          "name": "Test the exact discussion example on released garde0.23.0",
+          "run": "cargo +1.87.0 test --package garde --all-features --test discussion_164 --locked"
+        },
+        {
+          "name": "Check existing custom rule behavior",
+          "run": "cargo +1.87.0 test --package garde --all-features --test rules custom --locked"
+        },
+        {
+          "name": "Check existing length rule behavior",
+          "run": "cargo +1.87.0 test --package garde --all-features --test rules length --locked"
+        }
+      ]
+    }
+  }
+}
