@@ -40,6 +40,10 @@
           "run": "git merge-base --is-ancestor 62b71b12102bfcef0041672ef9b7d6b0d5b74369 HEAD\ngit diff --exit-code 62b71b12102bfcef0041672ef9b7d6b0d5b74369 HEAD -- garde/src garde_derive/src Cargo.toml Cargo.lock garde/Cargo.toml"
         },
         {
+          "name": "Refresh only the stale release workspace lock entries",
+          "run": "cargo +1.87.0 update --workspace\ngit diff -- Cargo.lock\nsha256sum Cargo.lock"
+        },
+        {
           "name": "Test the exact discussion example on released garde0.23.0",
           "run": "cargo +1.87.0 test --package garde --all-features --test discussion_164 --locked"
         },
