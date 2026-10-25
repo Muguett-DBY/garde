@@ -1,0 +1,40 @@
+name: Verify validated-value documentation
+
+on:
+  workflow_dispatch:
+    inputs:
+      target_sha:
+        description: Exact documentation commit to test
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  rustdoc:
+    runs-on: ubuntu-latest
+    env:
+      CARGO_TERM_COLOR: never
+      CARGO_REGISTRIES_CRATES_IO_PROTOCOL: sparse
+      TARGET_SHA: ${{ inputs.target_sha }}
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
+        with:
+          ref: ${{ inputs.target_sha }}
+          persist-credentials: false
+      - name: Verify checkout and README source
+        shell: bash
+        run: |
+          set -euo pipefail
+          [[ "$TARGET_SHA" =~ ^[0-9a-f]{40}$ ]]
+          test "$(git rev-parse HEAD)" = "$TARGET_SHA"
+          git rev-parse HEAD
+          test -L garde/README.md
+          test "$(readlink garde/README.md)" = "../README.md"
+      - name: Install project Rust version
+        run: rustup toolchain install 1.87.0 --profile minimal
+      - name: Execute README documentation tests
+        run: cargo +1.87.0 test --package garde --all-features --doc --locked
+      - name: Build documentation
+        run: cargo +1.87.0 doc --package garde --all-features --no-deps --locked
