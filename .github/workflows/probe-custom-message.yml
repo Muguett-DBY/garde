@@ -27,7 +27,8 @@
         {
           "uses": "actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803",
           "with": {
-            "persist-credentials": false
+            "persist-credentials": false,
+            "fetch-depth": 0
           }
         },
         {
@@ -36,7 +37,7 @@
         },
         {
           "name": "Check only the example and validation workflow were added",
-          "run": "test \"$(git rev-parse HEAD^)\" = 62b71b12102bfcef0041672ef9b7d6b0d5b74369\ngit diff --exit-code HEAD^ HEAD -- garde/src garde_derive/src Cargo.toml Cargo.lock garde/Cargo.toml"
+          "run": "git merge-base --is-ancestor 62b71b12102bfcef0041672ef9b7d6b0d5b74369 HEAD\ngit diff --exit-code 62b71b12102bfcef0041672ef9b7d6b0d5b74369 HEAD -- garde/src garde_derive/src Cargo.toml Cargo.lock garde/Cargo.toml"
         },
         {
           "name": "Test the exact discussion example on released garde0.23.0",

@@ -6,7 +6,7 @@ struct Form {
     values: Vec<String>,
 }
 
-fn at_least_one<T: garde::rules::length::Simple>(value: &T, _: &()) -> garde::Result {
+fn at_least_one<T: garde::rules::length::simple::Simple>(value: &T, _: &()) -> garde::Result {
     garde::rules::length::simple::apply(value, (1, usize::MAX))
         .map_err(|_| garde::Error::new("At least one value is required"))
 }
